@@ -1,11 +1,3 @@
----
-title: "April 12, 2024"
-bio: "LAEP Advisor Meeting and Mentoring"
-priority1: "LAEP Advisor Meeting"
-priority2: "Intro to SWE Lecture"
-priority3: "Mentoring"
----
-
 # Symmetric Key Cryptography Implementation
 
 ## Overview
@@ -93,13 +85,21 @@ priority3: "Mentoring"
       return encrypted_msg
   ```
 
-  - **Observations:** I used both of these modes to encrypt the following image
+  - **Observations:**
+
+    - I used both of these modes to encrypt the following image
+
+      ![](https://live.staticflickr.com/65535/53651803771_5ac81f9775.jpg)
 
     - The following image represents the EBC Mode:
+
+      ![](https://live.staticflickr.com/65535/53650935842_1fa8621887.jpg)
 
       - Notice how the EBC mode doesn't do a good job at encrypting this data as the the same type of byte (a white pixel) will map to the same encrypted data leading to a pattern the human eye can easily distinguish and notice the pattern instantly.
 
     - The following image represent CBC Mode:
+
+      ![](https://live.staticflickr.com/65535/53651805016_dc461b83d4.jpg)
 
       - The CBC does a much better job at introducing noise to the image making the visual picture look unrecognizable due to the fact that each cipher block encrypted is entirely dependent on the previous cipher text block allowing for new encryption mapping.
 
@@ -162,15 +162,15 @@ priority3: "Mentoring"
   - **Solution:** I set my string to be the following target string: `target_string = "000000000000sadminetrue"`
 
     - This resulted in the following cipher blocks:
-      Block 0: userid=456;userd
-      Block 1: ata=000000000000
-      Block 2: sadminetrue;sess
+      - Block 0: userid=456;userd
+      - Block 1: ata=000000000000
+      - Block 2: sadminetrue;sess
     - So the goal, was to flip 2 of the bits in block 1 using XOR to result in the following
       1. Flip the "s" in block 2 to ";"
       2. Flip "e" in between "admin" and "true" to "="
     - The result of this would be the correct formatted string, which would cause verify to return true.
 
-  - Code:
+  - **Code:**
 
   ```
     def attack(key, iv):
@@ -198,18 +198,33 @@ priority3: "Mentoring"
 
 ## Task 3: Performance comparison
 
+- In this task, I will measure the performance between public and symmetric key algorithms using SSL. Once I gain the measurements, I will use MatPlotLib to plot the results and create 2 graphs:
+
+  1. block size vs. throughput for the various AES key sizes:
+
+     ![](https://live.staticflickr.com/65535/53653545642_8761beb208.jpg)
+
+     - Performance slightly decreasees as the key size increases because there is more computation required for the larger keys.
+
+  2. RSA key size vs. throughput for each RSA function:
+
+     ![](https://live.staticflickr.com/65535/53653545637_925cf0ce99.jpg)
+
+     - The most shocking part of this plot is the difference in speed between verifycation and signing, As you can see private key operations are a lot more expensive than public key operations.
+
 ---
 
 ## QnA
 
 1. For task 1, looking at the resulting cipher texts, what do you observe? Are you able to derive any useful information about either of the encrypted images? What are the causes for what you observe?
 
-   - **Answer:**
+   - **Answer:** I observed that the ECB mode does not do a good job at encrypting the image's data. You can still observe what the overall image is due to how `identical plaintext blocks map to identical ciphertext blocks` leading to the human eye being able to easily notify what the image is. In the CBC mode, it the image was encrypted in a way that made it indistinguishable from the original photo due to how every encrypted block depends on the previous cipher blocks before it leading to a better encrypted image.
 
 2. For task 2, why this attack possible? What would this scheme need in order to prevent such attacks?
 
-   - **Answer:**
+   - **Answer:** A `bit flipping attack` was possible because of how the cipher block is encrypted based on the previous cipher block before it using XOR. An attacker knowing this could easily write an input that will lead to the next cipher block being modified in their favor. This is a problem with the `integrity` of our message as an attacker can now alter the ciphertext.
+   - **How to Prevent:** We could implement integrity checks to make sure that any changes to the data, will be caught before we decrypt the data.
 
 3. For task 3, how do the results compare? Make sure to include the plots in your report.
 
-   - **Answer:**
+   - **Answer:** The performance analysis in task 3 between AES and RSA had some interesting findings. From these results, you can see that AES is a very fast encryption method where there are speeds greater than 1000 MB/s. It is much faster than RSA, which is why is is used in protocols like TLS. RSA has a much slower throughput, especially in the signing operation for a 4096-bit key size that performs at around 300 operations per second. There is also a notable performance decrease when the key size doubles from a 2048-bit size key to a 4096-bit key. Where the verifies per second drops from 72257.8 to 19769.9. Notice how this is more than double, this is because RSA operations scale non-linearly with respect to the size of the key.
